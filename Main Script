@@ -1,0 +1,961 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "ZENHUB | TLK PRISON V1.6",
+   LoadingTitle = "Loading......",
+   LoadingSubtitle = "by Exterminate",
+   ShowText = "Rayfield UI", -- for mobile users to unhide Rayfield, change if you'd like
+   Theme = "AmberGlow",
+
+-- Toggle HIde UI in PC
+   ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+-- Disable RayfieldSettings
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from emitting warnings when the script has a version mismatch with the interface.
+   ConfigurationSaving = {
+      Enabled = false,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Zen Site v1.2"
+   },
+})
+
+-- Notification Rayfield
+Rayfield:Notify({
+   Title = "⚠️ Notification Alert",
+   Content = "- Thank you for using this script\n- This script is still in beta stage so there are many bugs",
+   Duration = 5,
+   Image = 4483362458,
+   Actions = { -- Notification Buttons
+      Ignore = {
+         Name = "Okay!",
+         Callback = function()
+         print("The user tapped Okay!")
+      end
+   },
+},
+})
+
+-- Name Scripts/Local Script
+local Change = Window:CreateTab("📰 Changelog", nil)
+local MainTab = Window:CreateTab("🏡 Main", nil)
+local Buff = Window:CreateTab("🔄️ Buffer", nil)
+local Bypass = Window:CreateTab("🛡️ Anti Cheat Bypass", nil)
+
+
+-- Services & Variables
+local Plr = game:GetService("Players").LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Places = {
+    ["Outside"] = CFrame.new(237, 3, -106),
+    ["Prison"] = CFrame.new(77, 3, -104),
+    ["Basement"] = CFrame.new(468, -6, -89),
+    ["Burger"] = CFrame.new(235, 3, -598)
+}
+
+local WeaponsName = {
+    "Axe", "Pickaxe", "Fist", "Bat", "Knife", "Hammer", 
+    "Bag", "Pliers", "Handsaw", "Screwdriver", "Crowbar", "PoliceBaton"
+}
+
+workspace.FallenPartsDestroyHeight = -50000
+
+-- Functions (dari Red GUI)
+local function Teleport(CFrameVal)
+    if Plr.Character and Plr.Character:FindFirstChild("HumanoidRootPart") then
+        Plr.Character.HumanoidRootPart.CFrame = CFrameVal
+    end
+end
+
+local function FireClick(Part)
+    if Part and Part:FindFirstChildOfClass("ClickDetector") then
+        fireclickdetector(Part:FindFirstChildOfClass("ClickDetector"))
+    end
+end
+
+local function Equip(Name)
+    if typeof(Name) == "string" then
+        if Plr.Backpack:FindFirstChild(Name) then
+            Plr.Backpack:FindFirstChild(Name).Parent = Plr.Character
+        end
+    elseif typeof(Name) == "Instance" and Name:IsA("Tool") then
+        Name.Parent = Plr.Character
+    end
+end
+
+local function Dupe(ToolName, ClickPart)
+    for _, tool in next, Plr.Backpack:GetChildren() do
+        if tool.Name == ToolName then
+            Equip(tool)
+        end
+    end
+    FireClick(ClickPart)
+end
+
+local function GetPlayersTeam()
+    local TeamCheckedPlayers = {}
+    for _, plr in pairs(game.Players:GetPlayers()) do
+        if plr ~= Plr and plr.Team ~= Plr.Team then
+            table.insert(TeamCheckedPlayers, plr)
+        end
+    end
+    return TeamCheckedPlayers
+end
+
+local function GetUnBlockingPlayers(Check, Pos)
+    local players = Check and GetPlayersTeam() or game.Players:GetPlayers()
+    local LocalCharacter = Plr.Character
+    local Players = {}
+    for _, plr in pairs(players) do
+        if plr ~= Plr and plr.Character and plr.Character:FindFirstChildOfClass("Humanoid") and plr.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
+            local Ray = Ray.new(Pos, (plr.Character.PrimaryPart.Position - Pos))
+            local part = workspace:FindPartOnRayWithIgnoreList(Ray, {LocalCharacter})
+            if part and part:IsDescendantOf(plr.Character) then
+                table.insert(Players, plr)
+            end
+        end
+    end
+    return Players
+end
+
+local function getPlayer(String, Information)
+    local Info = {
+        ["Raycasting"] = false,
+        ["Team"] = false,
+        ["Position"] = Plr.Character.PrimaryPart.Position,
+        ["Distance"] = math.huge
+    }
+    if Information then
+        for name, value in pairs(Information) do
+            if Info[name] ~= nil then Info[name] = value end
+        end
+    end
+
+    local players
+    if Info["Raycasting"] and Info["Team"] then
+        players = GetUnBlockingPlayers(true, Info["Position"])
+    elseif Info["Raycasting"] and not Info["Team"] then
+        players = GetUnBlockingPlayers(false, Info["Position"])
+    elseif Info["Team"] and not Info["Raycasting"] then
+        players = GetPlayersTeam()
+    else
+        players = game.Players:GetPlayers()
+    end
+
+    local Found = {}
+    local strl = String:lower()
+    if strl == "all" then
+        for i,v in pairs(players) do pcall(function()
+            if (Plr.Character.PrimaryPart.Position - v.Character.PrimaryPart.Position).magnitude <= Info["Distance"] then table.insert(Found, v) end
+        end) end
+    elseif strl == "others" then
+        for i,v in pairs(players) do pcall(function()
+            if v ~= Plr and (Plr.Character.PrimaryPart.Position - v.Character.PrimaryPart.Position).magnitude <= Info["Distance"] then table.insert(Found, v) end
+        end) end
+    elseif strl == "nearest" then
+        local closestPlayer, closestDistance
+        for _, p in pairs(players) do
+            if p ~= Plr and p.Character and p.Character:FindFirstChildOfClass("Humanoid") and p.Character:FindFirstChildOfClass("Humanoid").Health ~= 0 then
+                local distance = (Plr.Character.PrimaryPart.Position - p.Character.PrimaryPart.Position).Magnitude
+                if not closestDistance or distance < closestDistance then
+                    closestDistance = distance
+                    closestPlayer = p
+                end
+            end
+        end
+        if closestPlayer then table.insert(Found, closestPlayer) end
+    end
+    return Found
+end
+
+-- ==========================================
+-- UI TABS & SECTIONS
+-- ==========================================
+local MainSection = Change:CreateSection("Information & Version")
+local Paragraph = Change:CreateParagraph({Title = "✅ Version 1.2", Content = "- [+] Add No Cooldown Tool\n- [+] Anti Cheat Remover"})
+
+local Paragraph = Change:CreateParagraph({Title = "✅ Version 1.4", Content = "- [+] Add Buffer: HookMetaMethod, Spoofing + Hook, Randomization\n- [+] Anti Fling & Anti Walkspeed/Tp"})
+
+local Paragraph = Change:CreateParagraph({Title = "✅ Version 1.6", Content = "- [+] Fixed Bug Velocity\n- [+] Add Velocity Method\n- [+] Add Auto Bypass Anti Cheat & Infinite Yield"})
+
+local MainSection = MainTab:CreateSection("Main Script Toggle")
+local Paragraph = MainTab:CreateParagraph({Title = "📢 Information", Content = "If the script is not working, it means it needs to be updated"})
+local Toggle = MainTab:CreateToggle({
+   Name = "Auto Attack (Working)",
+   CurrentValue = false,
+   Flag = "Auto Attack",
+   Callback = function(value)
+   if value then
+            for _, weapon in pairs(Plr.Backpack:GetChildren()) do
+                if table.find(WeaponsName, weapon.Name) then
+                    Equip(weapon)
+                end
+            end
+            for _, weapon in pairs(Plr.Character:GetChildren()) do
+                if weapon:IsA("Tool") then
+                    weapon:Activate()
+                end
+            end
+        end
+   end,
+})
+
+local Toggle = MainTab:CreateToggle({
+   Name = "Auto Heal",
+   CurrentValue = false,
+   Flag = "Auto heal",
+   Callback = function(value)
+   if value then
+            if Plr.Character:FindFirstChildOfClass("Humanoid").Health <= 90 then
+                if Plr.Character:FindFirstChild("Hamburger") and not Plr.Backpack:FindFirstChild("Hamburger") then
+                    ReplicatedStorage:FindFirstChild("EatingEvent"):FireServer(Plr.Character, Plr.Character:FindFirstChild("Hamburger"), "Heal")
+                    Plr.Character:FindFirstChild("Hamburger").Parent = Plr.Backpack
+                elseif not Plr.Character:FindFirstChild("Hamburger") and Plr.Backpack:FindFirstChild("Hamburger") then
+                    Equip("Hamburger")
+                elseif not Plr.Character:FindFirstChild("Hamburger") and not Plr.Backpack:FindFirstChild("Hamburger") then
+                    FireClick(workspace.Hamburger)
+                end
+            end
+        end
+   end,
+})
+
+local MainSection = MainTab:CreateSection("Main Script Buttom")
+
+local Paragraph = MainTab:CreateParagraph({Title = "⚠️ Warning", Content = "Don't Spam Your Tool/Use Auto Click Can Get Benned!"})
+local Button = MainTab:CreateButton({
+    Name = "No Cooldown Tool (Fast)",
+    Callback = function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/uNaUfZpL"))()
+   end
+})
+
+local Button = MainTab:CreateButton({
+    Name = "No Cooldown Tool (Medium)",
+    Callback = function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/Gz3Kzh7v"))()
+   end
+})
+
+local Button = MainTab:CreateButton({
+    Name = "No Cooldown Tool (Low)",
+    Callback = function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/UURZKdcb"))()
+   end
+})
+
+local MainSection = Bypass:CreateSection("Anti Cheat Remover/Delete")
+
+local Paragraph = Bypass:CreateParagraph({Title = "⚠️ Warning", Content = "Some Anti Cheats are not bypassed properly so be careful"})
+local Button = Bypass:CreateButton({
+    Name = "Anti-Cheat Remover (Plus)",
+    Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/c00lhaxOFFICAL/GrayScriptsAntiCheatRemoverV2PLUS/refs/heads/main/V2PLUS"))()
+   end
+})
+
+local Button = Bypass:CreateButton({
+    Name = "Anti-Cheat Remover (Lite)",
+    Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/c00lhaxOFFICAL/GrayScriptsAntiCheatRemoverV2LITE/refs/heads/main/GrayGrayGray"))()
+   end
+})
+
+local MainSection = Bypass:CreateSection("Protection Ingame")
+
+local Paragraph = Bypass:CreateParagraph({Title = "⚠️ Warning", Content = "if you use Anti TP/Walkspeed script you can't use click tp and other tp"})
+local Button = Bypass:CreateButton({
+    Name = "Anti Fling",
+    Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/c00lhaxOFFICAL/GrayScriptsAntiCheatRemoverV2LITE/refs/heads/main/GrayGrayGray"))()
+   end
+})
+
+local Button = Bypass:CreateButton({
+    Name = "Anti TP/Walkspeed",
+    Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/c00lhaxOFFICAL/GrayScriptsAntiCheatRemoverV2LITE/refs/heads/main/GrayGrayGray"))()
+   end
+})
+
+local MainSection = Buff:CreateSection("Information/Guide")
+local Paragraph = Buff:CreateParagraph({Title = "🛡️ Information", Content = "For Walkspeed and Jumppower there are several types of Anti Cheat Bypass (Just Choose One)"})
+
+local MainSection = Buff:CreateSection("Walkspeed Slider")
+local lp = game:GetService("Players").LocalPlayer
+
+-- ==========================================
+-- Global Status Variables
+-- ==========================================
+local isWalkspeedEnabled = false
+local isJumpPowerEnabled = false
+
+-- Simpan nilai slider saat ini (diupdate setiap kali slider digeser)
+local currentWalkSpeedValue = 16
+local currentJumpPowerValue = 50
+
+-- Nilai default (normal)
+local DEFAULT_WALKSPEED = 16
+local DEFAULT_JUMPPOWER = 50
+
+local hooks = {
+    walkspeed = DEFAULT_WALKSPEED,
+    jumppower = DEFAULT_JUMPPOWER,
+}
+
+-- ==========================================
+-- Hook Metamethod Setup
+-- ==========================================
+local old_index, old_newindex
+
+old_index = hookmetamethod(game, "__index", function(self, property)
+    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
+        return hooks[property:lower()]
+    end
+    return old_index(self, property)
+end)
+
+old_newindex = hookmetamethod(game, "__newindex", function(self, property, value)
+    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
+        return -- Blokir perubahan dari game/anti-cheat
+    end
+    return old_newindex(self, property, value)
+end)
+
+
+-- ==========================================
+-- Fungsi Helper untuk Apply Nilai
+-- ==========================================
+local function applyWalkSpeed()
+    local char = lp.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    
+    if isWalkspeedEnabled then
+        -- Toggle ON: pakai nilai slider
+        hooks.walkspeed = currentWalkSpeedValue
+        hum.WalkSpeed = currentWalkSpeedValue
+    else
+        -- Toggle OFF: reset ke default
+        hooks.walkspeed = DEFAULT_WALKSPEED
+        hum.WalkSpeed = DEFAULT_WALKSPEED
+    end
+end
+
+local function applyJumpPower()
+    local char = lp.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    
+    if isJumpPowerEnabled then
+        hooks.jumppower = currentJumpPowerValue
+        hum.JumpPower = currentJumpPowerValue
+        hum.UseJumpPower = true
+    else
+        hooks.jumppower = DEFAULT_JUMPPOWER
+        hum.JumpPower = DEFAULT_JUMPPOWER
+        hum.UseJumpPower = true
+    end
+end
+
+
+-- ==========================================
+-- UI Toggles (Enable/Re-Enable)
+-- ==========================================
+local Toggle = Buff:CreateToggle({
+    Name = "Turn ON/Turn OFF (Hookmetamethod)",
+    Flag = "ToggleWS",
+    CurrentValue = false,
+    Callback = function(value)
+        isWalkspeedEnabled = value
+        applyWalkSpeed()
+    end
+})
+
+
+-- ==========================================
+-- UI Sliders Setup
+-- ==========================================
+
+-- Slider WalkSpeed
+local SliderWS = Buff:CreateSlider({
+   Name = "WalkSpeed (hookmetamethod)",
+   Range = {1, 100},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "sliderws",
+   Callback = function(Value)
+        -- Simpan nilai slider ke variabel global
+        currentWalkSpeedValue = Value
+        
+        -- Hanya apply kalau toggle aktif
+        if isWalkspeedEnabled then
+            applyWalkSpeed()
+        end
+   end,
+})
+
+
+-- ==========================================
+-- Auto Re-apply saat Respawn
+-- ==========================================
+local function onCharacterAdded(char)
+    char:WaitForChild("Humanoid")
+    task.wait(0.2)
+    
+    -- Re-apply status toggle + nilai slider saat respawn
+    applyWalkSpeed()
+    applyJumpPower()
+end
+
+if lp.Character then
+    onCharacterAdded(lp.Character)
+end
+lp.CharacterAdded:Connect(onCharacterAdded)
+
+local lp = game:GetService("Players").LocalPlayer
+
+-- ==========================================
+-- Global Status Variables
+-- ==========================================
+local isWalkspeedEnabled = false
+local isJumpPowerEnabled = false
+
+local currentWalkSpeedValue = 16
+local currentJumpPowerValue = 50
+
+local FAKE_WALKSPEED = 16      -- Nilai yang "dilihat" anti-cheat (JANGAN diubah!)
+local DEFAULT_WALKSPEED = 16
+local DEFAULT_JUMPPOWER = 50
+
+-- ==========================================
+-- Hook Metamethod Setup (Spoofing)
+-- ==========================================
+local old_index, old_newindex
+
+old_index = hookmetamethod(game, "__index", function(self, property)
+    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) then
+        local prop = property:lower()
+        
+        -- SPOOFING: Anti-cheat/server baca WalkSpeed = 16 (normal)
+        if prop == "walkspeed" then
+            return FAKE_WALKSPEED
+        end
+        
+        -- Hook untuk JumpPower (juga di-spoof kalau perlu)
+        if prop == "jumppower" then
+            return isJumpPowerEnabled and currentJumpPowerValue or DEFAULT_JUMPPOWER
+        end
+    end
+    return old_index(self, property)
+end)
+
+old_newindex = hookmetamethod(game, "__newindex", function(self, property, value)
+    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) then
+        local prop = property:lower()
+        
+        -- BLOKIR: Game/anti-cheat tidak bisa reset WalkSpeed
+        if prop == "walkspeed" then
+            return
+        end
+        
+        -- BLOKIR: Game tidak bisa reset JumpPower
+        if prop == "jumppower" then
+            return
+        end
+    end
+    return old_newindex(self, property, value)
+end)
+
+
+-- ==========================================
+-- Fungsi Helper untuk Apply Nilai
+-- ==========================================
+local function applyWalkSpeed()
+    local char = lp.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    
+    if isWalkspeedEnabled then
+        -- Toggle ON: Set WalkSpeed ke nilai REAL
+        -- Kita adalah "caller", jadi hook tidak akan blokir
+        -- Tapi anti-cheat tetap akan baca = 16 (FAKE)
+        hum.WalkSpeed = currentWalkSpeedValue
+    else
+        -- Toggle OFF: Reset ke default
+        hum.WalkSpeed = DEFAULT_WALKSPEED
+    end
+end
+
+local function applyJumpPower()
+    local char = lp.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    
+    if isJumpPowerEnabled then
+        hum.JumpPower = currentJumpPowerValue
+        hum.UseJumpPower = true
+    else
+        hum.JumpPower = DEFAULT_JUMPPOWER
+        hum.UseJumpPower = true
+    end
+end
+
+-- ==========================================
+-- UI Toggles (Enable/Re-Enable)
+-- ==========================================
+local Toggle = Buff:CreateToggle({
+    Name = "Turn ON/Turn OFF (Spoofing + Hook)",
+    Flag = "ToggleWS_Spoof",
+    CurrentValue = false,
+    Callback = function(value)
+        isWalkspeedEnabled = value
+        applyWalkSpeed()
+    end
+})
+
+local lp = game:GetService("Players").LocalPlayer
+local RunService = game:GetService("RunService")
+
+-- ==========================================
+-- Global Status Variables
+-- ==========================================
+local isWalkspeedEnabled = false
+local currentWalkSpeedValue = 16
+local DEFAULT_WALKSPEED = 16
+local DEFAULT_JUMPPOWER = 50
+
+local hooks = {
+    walkspeed = DEFAULT_WALKSPEED,
+    jumppower = DEFAULT_JUMPPOWER,
+}
+
+-- ==========================================
+-- Hook Metamethod Setup (Lapisan Proteksi Tambahan)
+-- ==========================================
+local old_index, old_newindex
+
+old_index = hookmetamethod(game, "__index", function(self, property)
+    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
+        return hooks[property:lower()]
+    end
+    return old_index(self, property)
+end)
+
+old_newindex = hookmetamethod(game, "__newindex", function(self, property, value)
+    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
+        return
+    end
+    return old_newindex(self, property, value)
+end)
+
+-- ==========================================
+-- UI Sliders Setup
+-- ==========================================
+
+-- Slider WalkSpeed (dengan Spoofing)
+local SliderWS = Buff:CreateSlider({
+   Name = "WalkSpeed (Spoofing + Hook)",
+   Range = {1, 100},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "sliderws_spoof",
+   Callback = function(Value)
+        -- Simpan nilai slider ke variabel global
+        currentWalkSpeedValue = Value
+        
+        -- Hanya apply kalau toggle aktif
+        if isWalkspeedEnabled then
+            applyWalkSpeed()
+        end
+   end,
+})
+
+-- ==========================================
+-- Auto Re-apply saat Respawn
+-- ==========================================
+local function onCharacterAdded(char)
+    char:WaitForChild("Humanoid")
+    task.wait(0.1) -- Tunggu hook terpasang
+    
+    -- Re-apply status toggle + nilai slider saat respawn
+    applyWalkSpeed()
+    applyJumpPower()
+end
+
+if lp.Character then
+    onCharacterAdded(lp.Character)
+end
+lp.CharacterAdded:Connect(onCharacterAdded)
+
+local lp = game:GetService("Players").LocalPlayer
+local RunService = game:GetService("RunService")
+
+-- ==========================================
+-- Global Status Variables
+-- ==========================================
+local isWalkspeedEnabled = false
+local isJumpPowerEnabled = false
+
+local currentWalkSpeedValue = 16
+local currentJumpPowerValue = 50
+
+local DEFAULT_WALKSPEED = 16
+local DEFAULT_JUMPPOWER = 50
+
+-- ==========================================
+-- Konfigurasi Randomization
+-- ==========================================
+local CONFIG = {
+    variationPercent = 0.10,     -- ±10% variasi dari base speed
+    minInterval = 0.3,           -- Interval minimum update (detik)
+    maxInterval = 0.8,           -- Interval maximum update (detik)
+    useRandomization = true,     -- Toggle randomization on/off
+}
+
+local hooks = {
+    walkspeed = DEFAULT_WALKSPEED,
+    jumppower = DEFAULT_JUMPPOWER,
+}
+
+-- ==========================================
+-- Hook Metamethod Setup
+-- ==========================================
+local old_index, old_newindex
+
+old_index = hookmetamethod(game, "__index", function(self, property)
+    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
+        return hooks[property:lower()]
+    end
+    return old_index(self, property)
+end)
+
+old_newindex = hookmetamethod(game, "__newindex", function(self, property, value)
+    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
+        return
+    end
+    return old_newindex(self, property, value)
+end)
+
+
+-- ==========================================
+-- Randomization System
+-- ==========================================
+local lastApplyTime = 0
+local nextInterval = math.random(CONFIG.minInterval * 10, CONFIG.maxInterval * 10) / 10
+
+local function getRandomizedSpeed()
+    if not CONFIG.useRandomization then
+        return currentWalkSpeedValue
+    end
+    
+    -- Hitung variasi ±10% dari base speed
+    local variation = currentWalkSpeedValue * CONFIG.variationPercent
+    local minSpeed = currentWalkSpeedValue - variation
+    local maxSpeed = currentWalkSpeedValue + variation
+    
+    -- Random speed dalam range (dengan 1 decimal agar tidak terlalu aneh)
+    local randomSpeed = math.random(minSpeed * 10, maxSpeed * 10) / 10
+    
+    return randomSpeed
+end
+
+
+-- ==========================================
+-- Fungsi Helper untuk Apply Nilai
+-- ==========================================
+local function applyWalkSpeed()
+    local char = lp.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    
+    if isWalkspeedEnabled then
+        -- Toggle ON: apply randomization kalau speed di atas normal
+        if currentWalkSpeedValue > DEFAULT_WALKSPEED then
+            local finalSpeed = getRandomizedSpeed()
+            hum.WalkSpeed = finalSpeed
+            hooks.walkspeed = finalSpeed
+        else
+            hum.WalkSpeed = DEFAULT_WALKSPEED
+            hooks.walkspeed = DEFAULT_WALKSPEED
+        end
+    else
+        -- Toggle OFF: reset ke default
+        hum.WalkSpeed = DEFAULT_WALKSPEED
+        hooks.walkspeed = DEFAULT_WALKSPEED
+    end
+end
+
+local function applyJumpPower()
+    local char = lp.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    
+    if isJumpPowerEnabled then
+        hum.JumpPower = currentJumpPowerValue
+        hum.UseJumpPower = true
+        hooks.jumppower = currentJumpPowerValue
+    else
+        hum.JumpPower = DEFAULT_JUMPPOWER
+        hum.UseJumpPower = true
+        hooks.jumppower = DEFAULT_JUMPPOWER
+    end
+end
+
+
+-- ==========================================
+-- Randomization Loop
+-- ==========================================
+RunService.Heartbeat:Connect(function()
+    -- Hanya jalan kalau toggle ON dan speed di atas normal
+    if not isWalkspeedEnabled or currentWalkSpeedValue <= DEFAULT_WALKSPEED then
+        return
+    end
+    
+    local now = tick()
+    if now - lastApplyTime >= nextInterval then
+        applyWalkSpeed()
+        lastApplyTime = now
+        -- Interval berikutnya juga di-randomize (anti pattern!)
+        nextInterval = math.random(CONFIG.minInterval * 10, CONFIG.maxInterval * 10) / 10
+    end
+end)
+
+
+-- ==========================================
+-- UI Toggles (Enable/Re-Enable)
+-- ==========================================
+local Toggle = Buff:CreateToggle({
+    Name = "Turn ON/Turn OFF (Randomization)",
+    Flag = "ToggleWS_Rand",
+    CurrentValue = false,
+    Callback = function(value)
+        isWalkspeedEnabled = value
+        applyWalkSpeed()
+    end
+})
+
+
+-- ==========================================
+-- UI Sliders Setup
+-- ==========================================
+
+-- Slider WalkSpeed (dengan Randomization)
+local SliderWS = Buff:CreateSlider({
+   Name = "WalkSpeed (Randomization)",
+   Range = {1, 100},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "sliderws_rand",
+   Callback = function(Value)
+        -- Simpan nilai slider ke variabel global
+        currentWalkSpeedValue = Value
+        
+        -- Hanya apply kalau toggle aktif
+        if isWalkspeedEnabled then
+            applyWalkSpeed()
+        end
+   end,
+})
+
+-- ==========================================
+-- Auto Re-apply saat Respawn
+-- ==========================================
+local function onCharacterAdded(char)
+    char:WaitForChild("Humanoid")
+    task.wait(0.2)
+    
+    -- Re-apply status toggle + nilai slider saat respawn
+    applyWalkSpeed()
+    applyJumpPower()
+end
+
+if lp.Character then
+    onCharacterAdded(lp.Character)
+end
+lp.CharacterAdded:Connect(onCharacterAdded)
+
+-- cFrame Walkspeed
+local lp = game:GetService("Players").LocalPlayer
+local RunService = game:GetService("RunService")
+
+-- ==========================================
+-- Global Status Variables
+-- ==========================================
+local isWalkspeedEnabled = true
+local currentWalkSpeedValue = 16
+local DEFAULT_WALKSPEED = 16
+
+-- ==========================================
+-- CFrame Movement Loop
+-- ==========================================
+local cframeConnection = nil
+
+local function startCFrameLoop()
+    -- Hapus koneksi lama kalau ada (hindari duplikat)
+    if cframeConnection then
+        cframeConnection:Disconnect()
+        cframeConnection = nil
+    end
+    
+    cframeConnection = RunService.Heartbeat:Connect(function(dt)
+        -- Skip kalau toggle OFF atau speed normal
+        if not isWalkspeedEnabled or currentWalkSpeedValue <= DEFAULT_WALKSPEED then
+            return
+        end
+        
+        local char = lp.Character
+        if not char then return end
+        
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hrp or not hum or hum.Health <= 0 then return end
+        
+        -- Skip kalau duduk, mati, atau di platform
+        if hum.Sit or hum.PlatformStand then return end
+        
+        local moveDir = hum.MoveDirection
+        if moveDir.Magnitude > 0 then
+            -- Gerakkan karakter via CFrame (horizontal saja, Y = 0)
+            hrp.CFrame = hrp.CFrame + (moveDir * currentWalkSpeedValue * dt)
+        end
+    end)
+end
+
+
+-- ==========================================
+-- Fungsi Helper untuk Apply WalkSpeed
+-- ==========================================
+local function applyWalkSpeed()
+    -- WalkSpeed asli tetap 16 (CFrame yang handle movement)
+    local char = lp.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    
+    -- PENTING: Biarkan WalkSpeed tetap normal
+    -- Anti-cheat akan baca = 16 (aman!)
+    hum.WalkSpeed = DEFAULT_WALKSPEED
+end
+
+
+-- ==========================================
+-- UI Toggle (Enable/Re-Enable)
+-- ==========================================
+local Toggle = Buff:CreateToggle({
+    Name = "Turn ON/Turn OFF (Cframe)",
+    Flag = "ToggleWS_CFrame",
+    CurrentValue = false,
+    Callback = function(value)
+        isWalkspeedEnabled = value
+        
+        if value then
+            -- Toggle ON: apply CFrame movement
+            applyWalkSpeed()
+        else
+            -- Toggle OFF: pastikan karakter kembali normal
+            local char = lp.Character
+            if char then
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hum then
+                    hum.WalkSpeed = DEFAULT_WALKSPEED
+                end
+            end
+        end
+    end
+})
+
+
+-- ==========================================
+-- UI Slider Setup
+-- ==========================================
+local SliderWS = Buff:CreateSlider({
+   Name = "WalkSpeed (CFrame Method)",
+   Range = {1, 100}, -- Jangan lebih dari 100 agar aman
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "sliderws_cframe",
+   Callback = function(Value)
+        -- Simpan nilai slider ke variabel global
+        currentWalkSpeedValue = Value
+        
+        -- Hanya apply kalau toggle aktif
+        if isWalkspeedEnabled then
+            applyWalkSpeed()
+        end
+   end,
+})
+
+
+-- ==========================================
+-- Auto Re-apply saat Respawn
+-- ==========================================
+local function onCharacterAdded(char)
+    char:WaitForChild("HumanoidRootPart")
+    char:WaitForChild("Humanoid")
+    task.wait(0.2)
+    
+    -- Re-apply status toggle + nilai slider saat respawn
+    applyWalkSpeed()
+end
+
+if lp.Character then
+    onCharacterAdded(lp.Character)
+end
+lp.CharacterAdded:Connect(onCharacterAdded)
+
+local lp = game:GetService("Players").LocalPlayer
+local RunService = game:GetService("RunService")
+
+-- ==========================================
+-- Global Status Variables
+-- ==========================================
+local isWalkspeedEnabled = false
+local currentWalkSpeedValue = 16
+local DEFAULT_WALKSPEED = 16
+local DEFAULT_JUMPPOWER = 50
+
+local hooks = {
+    walkspeed = DEFAULT_WALKSPEED,
+    jumppower = DEFAULT_JUMPPOWER,
+}
+
+-- ==========================================
+-- Hook Metamethod Setup (Lapisan Proteksi Tambahan)
+-- ==========================================
+local old_index, old_newindex
+
+old_index = hookmetamethod(game, "__index", function(self, property)
+    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
+        return hooks[property:lower()]
+    end
+    return old_index(self, property)
+end)
+
+old_newindex = hookmetamethod(game, "__newindex", function(self, property, value)
+    if not checkcaller() and self:IsA("Humanoid") and self:IsDescendantOf(lp.Character) and hooks[property:lower()] then
+        return
+    end
+    return old_newindex(self, property, value)
+end)
+
+local Button = Buff:CreateButton({
+    Name = "Walkspeed (VelocityLinier)",
+    Callback = function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/uAMdM8Xz"))()
+   end
+})
+
+local MainSection = Buff:CreateSection("Jumppower Slider")
+local Paragraph = Buff:CreateParagraph({Title = "📢 INFORMATION", Content = "- Coming Soon\n- Fun Fact: The creator of this script was just one person who was bored."})
