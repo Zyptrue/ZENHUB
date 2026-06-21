@@ -248,6 +248,16 @@ local Button = MainTab:CreateButton({
 local MainSection = Bypass:CreateSection("Anti Cheat Remover/Delete")
 
 local Paragraph = Bypass:CreateParagraph({Title = "⚠️ Warning", Content = "Some Anti Cheats are not bypassed properly so be careful"})
+
+local Toggle = Bypass:CreateToggle({
+   Name = "Anti-Cheat Remover (Auto Bypass)",
+   CurrentValue = true,
+   Flag = "Auto heal",
+   Callback = function()
+   end,
+})
+
+
 local Button = Bypass:CreateButton({
     Name = "Anti-Cheat Remover (Plus)",
     Callback = function()
