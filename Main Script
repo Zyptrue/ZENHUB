@@ -41,6 +41,7 @@ local Change = Window:CreateTab("📰 Changelog", nil)
 local MainTab = Window:CreateTab("🏡 Main", nil)
 local Buff = Window:CreateTab("🔄️ Buffer", nil)
 local Bypass = Window:CreateTab("🛡️ Anti Cheat Bypass", nil)
+local Team = Window:CreateTab("🚹 Team & Esp", nil)
 
 
 -- Services & Variables
@@ -669,3 +670,328 @@ local Button = Buff:CreateButton({
 
 local MainSection = Buff:CreateSection("Jumppower Slider")
 local Paragraph = Buff:CreateParagraph({Title = "📢 INFORMATION", Content = "- Coming Soon\n- Fun Fact: The creator of this script was just one person who was bored."})
+
+local MainSection = Team:CreateSection("Choose Team")
+local Dropdown = Team:CreateDropdown({
+   Name = "Change Team",
+   Options = {"Fugitive", "Prison", "Police", "Civilian", "ADMIN", "Hostage", "Choosing Team"},
+   CurrentOption = {"None"},
+   MultipleOptions = false,
+   Flag = "ChangeTeamDropdown",
+   Callback = function(Options)
+       -- Options adalah tabel berisi string, karena MultipleOptions = false, kita ambil index pertama
+       local selectedTeam = Options[1]
+       if not selectedTeam then return end
+       
+       -- Services
+       local Players = game:GetService("Players")
+       local Teams = game:GetService("Teams")
+       local ReplicatedStorage = game:GetService("ReplicatedStorage")
+       local lp = Players.LocalPlayer
+       
+       -- Mapping nama team ke RemoteEvent-nya (gunakan FindFirstChild agar tidak hang)
+       local teamRemotes = {
+           ["Fugitive"]      = ReplicatedStorage:FindFirstChild("ShowguiFugitive"),
+           ["Prison"]        = ReplicatedStorage:FindFirstChild("Showgui"),
+           ["Police"]        = ReplicatedStorage:FindFirstChild("ShowguiGuard"),
+           ["Civilian"]      = ReplicatedStorage:FindFirstChild("ShowguiCivilian"),
+           ["ADMIN"]         = ReplicatedStorage:FindFirstChild("ShowguiAdmin"),
+           ["Hostage"]       = ReplicatedStorage:FindFirstChild("ShowguiHostage"),
+           ["Choosing"] = ReplicatedStorage:FindFirstChild("ShowguiChoosing"),
+       }
+       
+       local remote = teamRemotes[selectedTeam]
+       
+       if remote then
+           -- Method 1: Gunakan firesignal jika ada RemoteEvent
+           local success, err = pcall(function()
+               firesignal(remote.OnClientEvent)
+           end)
+           
+           if success then
+               print("[Change Team] Successfully moved to the team: " .. selectedTeam)
+           else
+               warn("[Change Team] Failed to fire signal: " .. tostring(err))
+           end
+       else
+           -- Method 2: Fallback - gunakan method langsung untuk team tanpa RemoteEvent
+           local targetTeam = Teams:FindFirstChild(selectedTeam)
+           
+           if targetTeam then
+               -- Set Team langsung
+               lp.Team = targetTeam
+               lp.TeamColor = targetTeam.TeamColor
+               print("[Change Team] Successfully moved to " .. selectedTeam .. " (Direct Method)")
+           else
+               warn("[Change Team] Team '" .. selectedTeam .. "' tidak ditemukan di game!")
+           end
+       end
+   end,
+})
+
+local MainSection = Team:CreateSection("Esp Player")
+-- ==========================================
+-- ESP Player System (Toggle + Team Color)
+-- ==========================================
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local lp = Players.LocalPlayer
+
+local espEnabled = false
+local espObjects = {} -- Menyimpan semua BillboardGui ESP
+local updateConnection = nil
+
+-- ==========================================
+-- Mapping Warna Team
+-- ==========================================
+local function getTeamColor(player)
+    local team = player.Team
+    local teamName = team and team.Name or ""
+    
+    -- Mapping manual berdasarkan nama team (sesuaikan dengan game kamu)
+    local teamColorMap = {
+        -- Team dari script sebelumnya
+        ["Fugitive"] = Color3.fromRGB(255, 50, 50),   -- Merah
+        ["Prison"]   = Color3.fromRGB(255, 150, 0),   -- Orange
+        ["Police"]   = Color3.fromRGB(0, 100, 255),   -- Biru
+        ["Civilian"]    = Color3.fromRGB(50, 255, 50),   -- Hijau
+        ["Hostage"]    = Color3.fromRGB(139, 0, 0),   -- Biru
+        
+        -- Team umum
+        ["Red"]      = Color3.fromRGB(255, 50, 50),
+        ["Blue"]     = Color3.fromRGB(50, 100, 255),
+        ["Green"]    = Color3.fromRGB(50, 255, 50),
+        ["Yellow"]   = Color3.fromRGB(255, 255, 50),
+        ["Purple"]   = Color3.fromRGB(200, 50, 255),
+        ["White"]    = Color3.fromRGB(255, 255, 255),
+        ["Black"]    = Color3.fromRGB(50, 50, 50),
+    }
+    
+    -- Cek apakah nama team ada di mapping (case-insensitive)
+    for name, color in pairs(teamColorMap) do
+        if string.lower(teamName) == string.lower(name) then
+            return color
+        end
+    end
+    
+    -- Fallback: Gunakan TeamColor dari Roblox
+    if team and team.TeamColor then
+        return team.TeamColor.Color
+    end
+    
+    -- Default: Putih jika tidak terdeteksi
+    return Color3.fromRGB(255, 255, 255)
+end
+
+-- ==========================================
+-- Fungsi untuk Membuat ESP ke satu Player
+-- ==========================================
+local function createESP(targetPlayer)
+    if targetPlayer == lp then return end -- Skip diri sendiri
+    
+    local function setupESP(char)
+        if not char then return end
+        local head = char:WaitForChild("Head", 5)
+        local hum = char:WaitForChild("Humanoid", 5)
+        if not head or not hum then return end
+        
+        -- Dapatkan warna team player ini
+        local teamColor = getTeamColor(targetPlayer)
+        
+        -- Hapus ESP lama kalau ada (mencegah duplikat)
+        if head:FindFirstChild("PlayerESP_GUI") then
+            head.PlayerESP_GUI:Destroy()
+        end
+        if char:FindFirstChild("PlayerESP_HL") then
+            char.PlayerESP_HL:Destroy()
+        end
+        
+        -- 1. Highlight (Outline Player) - Warna sesuai team
+        local highlight = Instance.new("Highlight")
+        highlight.Name = "PlayerESP_HL"
+        highlight.FillColor = teamColor
+        highlight.OutlineColor = Color3.fromRGB(0, 0, 0)
+        highlight.FillTransparency = 0.7
+        highlight.OutlineTransparency = 0
+        highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        highlight.Adornee = char
+        highlight.Parent = char
+        
+        -- 2. BillboardGui (Wadah untuk Nama & Health Bar)
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "PlayerESP_GUI"
+        billboard.Adornee = head
+        billboard.Size = UDim2.new(0, 120, 0, 40) -- Ukuran kecil & proporsional
+        billboard.StudsOffset = Vector3.new(0, 2.5, 0) -- Naik sedikit di atas kepala
+        billboard.AlwaysOnTop = true
+        billboard.ResetOnSpawn = false
+        billboard.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        billboard.Parent = head
+        
+        -- 3. Nama Player (Warna sesuai team)
+        local nameLabel = Instance.new("TextLabel")
+        nameLabel.Name = "NameLabel"
+        nameLabel.Size = UDim2.new(1, 0, 0, 16)
+        nameLabel.Position = UDim2.new(0, 0, 0, 0)
+        nameLabel.BackgroundTransparency = 1
+        nameLabel.Text = targetPlayer.Name
+        nameLabel.TextColor3 = teamColor -- Warna nama sesuai team
+        nameLabel.TextStrokeTransparency = 0
+        nameLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+        nameLabel.Font = Enum.Font.GothamBold
+        nameLabel.TextSize = 13 -- Ukuran kecil, tidak kebesaran
+        nameLabel.Parent = billboard
+        
+        -- 4. Health Bar Background (Abu-abu)
+        local hpBg = Instance.new("Frame")
+        hpBg.Name = "HealthBg"
+        hpBg.Size = UDim2.new(0, 100, 0, 6)
+        hpBg.Position = UDim2.new(0.5, -50, 0, 18) -- Di tengah, di bawah nama
+        hpBg.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        hpBg.BorderSizePixel = 0
+        hpBg.Parent = billboard
+        
+        local hpCornerBg = Instance.new("UICorner")
+        hpCornerBg.CornerRadius = UDim.new(0, 3)
+        hpCornerBg.Parent = hpBg
+        
+        -- 5. Health Bar Fill (Warna berubah sesuai HP)
+        local hpFill = Instance.new("Frame")
+        hpFill.Name = "HealthFill"
+        hpFill.Size = UDim2.new(1, 0, 1, 0)
+        hpFill.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+        hpFill.BorderSizePixel = 0
+        hpFill.Parent = hpBg
+        
+        local hpCornerFill = Instance.new("UICorner")
+        hpCornerFill.CornerRadius = UDim.new(0, 3)
+        hpCornerFill.Parent = hpFill
+        
+        -- Simpan referensi untuk update
+        espObjects[targetPlayer] = {
+            billboard = billboard,
+            highlight = highlight,
+            hpFill = hpFill,
+            nameLabel = nameLabel,
+            humanoid = hum,
+            character = char
+        }
+    end
+    
+    if targetPlayer.Character then
+        setupESP(targetPlayer.Character)
+    end
+    
+    -- Re-apply saat respawn
+    targetPlayer.CharacterAdded:Connect(function(char)
+        if espEnabled then
+            task.wait(0.5)
+            setupESP(char)
+        end
+    end)
+end
+
+-- ==========================================
+-- Fungsi Hapus Semua ESP
+-- ==========================================
+local function clearAllESP()
+    for _, data in pairs(espObjects) do
+        pcall(function()
+            if data.billboard then data.billboard:Destroy() end
+            if data.highlight then data.highlight:Destroy() end
+        end)
+    end
+    espObjects = {}
+end
+
+-- ==========================================
+-- Fungsi Update Health Bar (Looping)
+-- ==========================================
+local function startUpdateLoop()
+    if updateConnection then updateConnection:Disconnect() end
+    
+    updateConnection = RunService.RenderStepped:Connect(function()
+        for player, data in pairs(espObjects) do
+            pcall(function()
+                local hum = data.humanoid
+                local fill = data.hpFill
+                if hum and fill and hum.Parent then
+                    -- Hitung persentase HP (max 100)
+                    local percent = math.clamp(hum.Health / hum.MaxHealth, 0, 1)
+                    fill.Size = UDim2.new(percent, 0, 1, 0)
+                    
+                    -- Warna berubah: Hijau -> Kuning -> Merah
+                    if percent > 0.6 then
+                        fill.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+                    elseif percent > 0.3 then
+                        fill.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
+                    else
+                        fill.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+                    end
+                end
+            end)
+        end
+    end)
+end
+
+-- ==========================================
+-- Fungsi Toggle ESP ON/OFF
+-- ==========================================
+local function toggleESP(state)
+    espEnabled = state
+    
+    if state then
+        -- Aktifkan: Pasang ESP ke semua player yang sudah ada
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= lp then
+                createESP(player)
+            end
+        end
+        startUpdateLoop()
+    else
+        -- Nonaktifkan: Hapus semua ESP
+        if updateConnection then
+            updateConnection:Disconnect()
+            updateConnection = nil
+        end
+        clearAllESP()
+    end
+end
+
+-- ==========================================
+-- Handle Player Baru Join
+-- ==========================================
+Players.PlayerAdded:Connect(function(player)
+    if espEnabled and player ~= lp then
+        createESP(player)
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+    if espObjects[player] then
+        pcall(function()
+            if espObjects[player].billboard then espObjects[player].billboard:Destroy() end
+            if espObjects[player].highlight then espObjects[player].highlight:Destroy() end
+        end)
+        espObjects[player] = nil
+    end
+end)
+
+-- ==========================================
+-- UI Toggle (ESP Player)
+-- ==========================================
+local Toggle = Team:CreateToggle({
+   Name = "ESP Player",
+   CurrentValue = false,
+   Flag = "ESPPlayerToggle",
+   Callback = function(Value)
+       toggleESP(Value)
+   end,
+})
+
+-- ==========================================
+-- Inisialisasi Awal
+-- ==========================================
+if lp.Character then
+    -- Siap pakai, tinggal toggle untuk aktifkan
+end
