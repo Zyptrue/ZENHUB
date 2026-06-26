@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "ZENHUB | TLK PRISON V1.6",
+   Name = "ZENHUB | TLK PRISON V1.9",
    LoadingTitle = "Loading......",
    LoadingSubtitle = "by Exterminate",
    ShowText = "Rayfield UI", -- for mobile users to unhide Rayfield, change if you'd like
@@ -174,14 +174,16 @@ end
 -- UI TABS & SECTIONS
 -- ==========================================
 local MainSection = Change:CreateSection("Information & Version")
-local Paragraph = Change:CreateParagraph({Title = "✅ Version 1.2", Content = "- [+] Add No Cooldown Tool\n- [+] Anti Cheat Remover"})
+local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.2", Content = "- [+] Add No Cooldown Tool\n- [+] Anti Cheat Remover"})
 
-local Paragraph = Change:CreateParagraph({Title = "✅ Version 1.4", Content = "- [+] Add Buffer: HookMetaMethod, Spoofing + Hook, Randomization\n- [+] Anti Fling & Anti Walkspeed/Tp"})
+local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.4", Content = "- [+] Add Buffer: HookMetaMethod, Spoofing + Hook, Randomization\n- [+] Anti Fling & Anti Walkspeed/Tp"})
 
-local Paragraph = Change:CreateParagraph({Title = "✅ Version 1.6", Content = "- [+] Fixed Bug Velocity\n- [+] Add Velocity Method\n- [+] Add Auto Bypass Anti Cheat & Infinite Yield"})
+local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.6", Content = "- [+] Fixed Bug Velocity\n- [+] Add Velocity Method\n- [+] Add Auto Bypass Anti Cheat & Infinite Yield"})
+
+local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.9 (Latest Update)", Content = "- [+] Fixed Cframe Bug\n- [+] Add 🚹 Team & Esp\n- [+] Add Choose Team\n- [+] Add Esp Toggle\n- [!!] Delete Spoofing + Hook"})
 
 local MainSection = MainTab:CreateSection("Main Script Toggle")
-local Paragraph = MainTab:CreateParagraph({Title = "📢 Information", Content = "If the script is not working, it means it needs to be updated"})
+local Paragraph = MainTab:CreateParagraph({Title = "📢 INFORMATION", Content = "If the script is not working, it means it needs to be updated"})
 local Toggle = MainTab:CreateToggle({
    Name = "Auto Attack (Working)",
    CurrentValue = false,
@@ -224,7 +226,7 @@ local Toggle = MainTab:CreateToggle({
 
 local MainSection = MainTab:CreateSection("Main Script Buttom")
 
-local Paragraph = MainTab:CreateParagraph({Title = "⚠️ Warning", Content = "Don't Spam Your Tool/Use Auto Click Can Get Benned!"})
+local Paragraph = MainTab:CreateParagraph({Title = "⚠️ WARNING", Content = "Don't Spam Your Tool/Use Auto Click Can Get Benned!"})
 local Button = MainTab:CreateButton({
     Name = "No Cooldown Tool (Fast)",
     Callback = function()
@@ -248,7 +250,7 @@ local Button = MainTab:CreateButton({
 
 local MainSection = Bypass:CreateSection("Anti Cheat Remover/Delete")
 
-local Paragraph = Bypass:CreateParagraph({Title = "⚠️ Warning", Content = "Some Anti Cheats are not bypassed properly so be careful"})
+local Paragraph = Bypass:CreateParagraph({Title = "⚠️ WARNING", Content = "Some Anti Cheats are not bypassed properly so be careful"})
 
 local Toggle = Bypass:CreateToggle({
    Name = "Anti-Cheat Remover (Auto Bypass)",
@@ -275,7 +277,7 @@ local Button = Bypass:CreateButton({
 
 local MainSection = Bypass:CreateSection("Protection Ingame")
 
-local Paragraph = Bypass:CreateParagraph({Title = "⚠️ Warning", Content = "if you use Anti TP/Walkspeed script you can't use click tp and other tp"})
+local Paragraph = Bypass:CreateParagraph({Title = "⚠️ WARNING", Content = "if you use Anti TP/Walkspeed script you can't use click tp and other tp"})
 local Button = Bypass:CreateButton({
     Name = "Anti Fling",
     Callback = function()
@@ -291,7 +293,8 @@ local Button = Bypass:CreateButton({
 })
 
 local MainSection = Buff:CreateSection("Information/Guide")
-local Paragraph = Buff:CreateParagraph({Title = "🛡️ Information", Content = "For Walkspeed and Jumppower there are several types of Anti Cheat Bypass (Just Choose One)"})
+local Paragraph = Buff:CreateParagraph({Title = "📢 INFORMATION", Content = "For Walkspeed and Jumppower there are several types of Anti Cheat Bypass (Just Choose One)"})
+local Paragraph = Buff:CreateParagraph({Title = "🛡️ SECURITY SYSTEM", Content = "We have detected a bug affecting Walkspeed, and it will be fixed in the next update"})
 
 local MainSection = Buff:CreateSection("Walkspeed Slider")
 local lp = game:GetService("Players").LocalPlayer
@@ -672,9 +675,10 @@ local MainSection = Buff:CreateSection("Jumppower Slider")
 local Paragraph = Buff:CreateParagraph({Title = "📢 INFORMATION", Content = "- Coming Soon\n- Fun Fact: The creator of this script was just one person who was bored."})
 
 local MainSection = Team:CreateSection("Choose Team")
+local Paragraph = Team:CreateParagraph({Title = "📢 INFORMATION", Content = "More Esp is Coming Soon"})
 local Dropdown = Team:CreateDropdown({
    Name = "Change Team",
-   Options = {"Fugitive", "Prison", "Police", "Civilian", "ADMIN", "Hostage", "Choosing Team"},
+   Options = {"Fugitive", "Prison", "Police", "Civilian (Client)", "ADMIN (Client)", "Hostage (Client)", "Choosing (Client)"},
    CurrentOption = {"None"},
    MultipleOptions = false,
    Flag = "ChangeTeamDropdown",
@@ -723,16 +727,13 @@ local Dropdown = Team:CreateDropdown({
                lp.TeamColor = targetTeam.TeamColor
                print("[Change Team] Successfully moved to " .. selectedTeam .. " (Direct Method)")
            else
-               warn("[Change Team] Team '" .. selectedTeam .. "' tidak ditemukan di game!")
+               warn("[Change Team] Team '" .. selectedTeam .. "' Not found in the game!")
            end
        end
    end,
 })
 
-local MainSection = Team:CreateSection("Esp Player")
--- ==========================================
--- ESP Player System (Toggle + Team Color)
--- ==========================================
+local MainSection = Team:CreateSection("Esp Toggle")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local lp = Players.LocalPlayer
@@ -748,16 +749,12 @@ local function getTeamColor(player)
     local team = player.Team
     local teamName = team and team.Name or ""
     
-    -- Mapping manual berdasarkan nama team (sesuaikan dengan game kamu)
     local teamColorMap = {
-        -- Team dari script sebelumnya
-        ["Fugitive"] = Color3.fromRGB(255, 50, 50),   -- Merah
-        ["Prison"]   = Color3.fromRGB(255, 150, 0),   -- Orange
-        ["Police"]   = Color3.fromRGB(0, 100, 255),   -- Biru
-        ["Civilian"]    = Color3.fromRGB(50, 255, 50),   -- Hijau
-        ["Hostage"]    = Color3.fromRGB(139, 0, 0),   -- Biru
-        
-        -- Team umum
+        ["Fugitive"] = Color3.fromRGB(255, 50, 50),
+        ["Prison"]   = Color3.fromRGB(255, 150, 0),
+        ["Police"]   = Color3.fromRGB(0, 100, 255),
+        ["Civilian"] = Color3.fromRGB(50, 255, 50),
+        ["Hostage"]  = Color3.fromRGB(139, 0, 0),
         ["Red"]      = Color3.fromRGB(255, 50, 50),
         ["Blue"]     = Color3.fromRGB(50, 100, 255),
         ["Green"]    = Color3.fromRGB(50, 255, 50),
@@ -767,19 +764,16 @@ local function getTeamColor(player)
         ["Black"]    = Color3.fromRGB(50, 50, 50),
     }
     
-    -- Cek apakah nama team ada di mapping (case-insensitive)
     for name, color in pairs(teamColorMap) do
         if string.lower(teamName) == string.lower(name) then
             return color
         end
     end
     
-    -- Fallback: Gunakan TeamColor dari Roblox
     if team and team.TeamColor then
         return team.TeamColor.Color
     end
     
-    -- Default: Putih jika tidak terdeteksi
     return Color3.fromRGB(255, 255, 255)
 end
 
@@ -787,18 +781,18 @@ end
 -- Fungsi untuk Membuat ESP ke satu Player
 -- ==========================================
 local function createESP(targetPlayer)
-    if targetPlayer == lp then return end -- Skip diri sendiri
+    if targetPlayer == lp then return end
     
     local function setupESP(char)
         if not char then return end
         local head = char:WaitForChild("Head", 5)
         local hum = char:WaitForChild("Humanoid", 5)
-        if not head or not hum then return end
+        local hrp = char:WaitForChild("HumanoidRootPart", 5)
+        if not head or not hum or not hrp then return end
         
-        -- Dapatkan warna team player ini
         local teamColor = getTeamColor(targetPlayer)
         
-        -- Hapus ESP lama kalau ada (mencegah duplikat)
+        -- Hapus ESP lama (mencegah duplikat)
         if head:FindFirstChild("PlayerESP_GUI") then
             head.PlayerESP_GUI:Destroy()
         end
@@ -806,7 +800,7 @@ local function createESP(targetPlayer)
             char.PlayerESP_HL:Destroy()
         end
         
-        -- 1. Highlight (Outline Player) - Warna sesuai team
+        -- 1. Highlight (Outline Player)
         local highlight = Instance.new("Highlight")
         highlight.Name = "PlayerESP_HL"
         highlight.FillColor = teamColor
@@ -817,36 +811,50 @@ local function createESP(targetPlayer)
         highlight.Adornee = char
         highlight.Parent = char
         
-        -- 2. BillboardGui (Wadah untuk Nama & Health Bar)
+        -- 2. BillboardGui (Wadah untuk semua info)
         local billboard = Instance.new("BillboardGui")
         billboard.Name = "PlayerESP_GUI"
         billboard.Adornee = head
-        billboard.Size = UDim2.new(0, 120, 0, 40) -- Ukuran kecil & proporsional
-        billboard.StudsOffset = Vector3.new(0, 2.5, 0) -- Naik sedikit di atas kepala
+        billboard.Size = UDim2.new(0, 140, 0, 60) -- Diperbesar untuk menampung info baru
+        billboard.StudsOffset = Vector3.new(0, 3, 0)
         billboard.AlwaysOnTop = true
         billboard.ResetOnSpawn = false
         billboard.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
         billboard.Parent = head
         
-        -- 3. Nama Player (Warna sesuai team)
+        -- 3. Nama Player
         local nameLabel = Instance.new("TextLabel")
         nameLabel.Name = "NameLabel"
-        nameLabel.Size = UDim2.new(1, 0, 0, 16)
+        nameLabel.Size = UDim2.new(1, 0, 0, 14)
         nameLabel.Position = UDim2.new(0, 0, 0, 0)
         nameLabel.BackgroundTransparency = 1
         nameLabel.Text = targetPlayer.Name
-        nameLabel.TextColor3 = teamColor -- Warna nama sesuai team
+        nameLabel.TextColor3 = teamColor
         nameLabel.TextStrokeTransparency = 0
         nameLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
         nameLabel.Font = Enum.Font.GothamBold
-        nameLabel.TextSize = 13 -- Ukuran kecil, tidak kebesaran
+        nameLabel.TextSize = 12
         nameLabel.Parent = billboard
         
-        -- 4. Health Bar Background (Abu-abu)
+        -- 4. Label Jarak (BARU)
+        local distanceLabel = Instance.new("TextLabel")
+        distanceLabel.Name = "DistanceLabel"
+        distanceLabel.Size = UDim2.new(1, 0, 0, 12)
+        distanceLabel.Position = UDim2.new(0, 0, 0, 13)
+        distanceLabel.BackgroundTransparency = 1
+        distanceLabel.Text = "[0m]"
+        distanceLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        distanceLabel.TextStrokeTransparency = 0
+        distanceLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+        distanceLabel.Font = Enum.Font.GothamBold
+        distanceLabel.TextSize = 11
+        distanceLabel.Parent = billboard
+        
+        -- 5. Health Bar Background
         local hpBg = Instance.new("Frame")
         hpBg.Name = "HealthBg"
-        hpBg.Size = UDim2.new(0, 100, 0, 6)
-        hpBg.Position = UDim2.new(0.5, -50, 0, 18) -- Di tengah, di bawah nama
+        hpBg.Size = UDim2.new(0, 120, 0, 6)
+        hpBg.Position = UDim2.new(0.5, -60, 0, 26)
         hpBg.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
         hpBg.BorderSizePixel = 0
         hpBg.Parent = billboard
@@ -855,7 +863,7 @@ local function createESP(targetPlayer)
         hpCornerBg.CornerRadius = UDim.new(0, 3)
         hpCornerBg.Parent = hpBg
         
-        -- 5. Health Bar Fill (Warna berubah sesuai HP)
+        -- 6. Health Bar Fill
         local hpFill = Instance.new("Frame")
         hpFill.Name = "HealthFill"
         hpFill.Size = UDim2.new(1, 0, 1, 0)
@@ -867,13 +875,45 @@ local function createESP(targetPlayer)
         hpCornerFill.CornerRadius = UDim.new(0, 3)
         hpCornerFill.Parent = hpFill
         
+        -- 7. Label HP (BARU) - Contoh: "HP: 100/100"
+        local hpLabel = Instance.new("TextLabel")
+        hpLabel.Name = "HPLabel"
+        hpLabel.Size = UDim2.new(1, 0, 0, 12)
+        hpLabel.Position = UDim2.new(0, 0, 0, 34)
+        hpLabel.BackgroundTransparency = 1
+        hpLabel.Text = "HP: 100/100"
+        hpLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        hpLabel.TextStrokeTransparency = 0
+        hpLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+        hpLabel.Font = Enum.Font.GothamBold
+        hpLabel.TextSize = 11
+        hpLabel.Parent = billboard
+        
+        -- 8. Label Team (BARU - opsional, agar lebih informatif)
+        local teamLabel = Instance.new("TextLabel")
+        teamLabel.Name = "TeamLabel"
+        teamLabel.Size = UDim2.new(1, 0, 0, 10)
+        teamLabel.Position = UDim2.new(0, 0, 0, 46)
+        teamLabel.BackgroundTransparency = 1
+        teamLabel.Text = "[" .. (targetPlayer.Team and targetPlayer.Team.Name or "No Team") .. "]"
+        teamLabel.TextColor3 = teamColor
+        teamLabel.TextStrokeTransparency = 0
+        teamLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+        teamLabel.Font = Enum.Font.Gotham
+        teamLabel.TextSize = 10
+        teamLabel.Parent = billboard
+        
         -- Simpan referensi untuk update
         espObjects[targetPlayer] = {
             billboard = billboard,
             highlight = highlight,
             hpFill = hpFill,
+            hpLabel = hpLabel,
+            distanceLabel = distanceLabel,
             nameLabel = nameLabel,
+            teamLabel = teamLabel,
             humanoid = hum,
+            hrp = hrp,
             character = char
         }
     end
@@ -882,7 +922,6 @@ local function createESP(targetPlayer)
         setupESP(targetPlayer.Character)
     end
     
-    -- Re-apply saat respawn
     targetPlayer.CharacterAdded:Connect(function(char)
         if espEnabled then
             task.wait(0.5)
@@ -905,28 +944,63 @@ local function clearAllESP()
 end
 
 -- ==========================================
--- Fungsi Update Health Bar (Looping)
+-- Fungsi Update: HP + Jarak (Looping)
 -- ==========================================
 local function startUpdateLoop()
     if updateConnection then updateConnection:Disconnect() end
     
     updateConnection = RunService.RenderStepped:Connect(function()
+        -- Dapatkan HRP player lokal
+        local myChar = lp.Character
+        local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
+        
         for player, data in pairs(espObjects) do
             pcall(function()
                 local hum = data.humanoid
+                local hrp = data.hrp
                 local fill = data.hpFill
-                if hum and fill and hum.Parent then
-                    -- Hitung persentase HP (max 100)
+                local hpLabel = data.hpLabel
+                local distLabel = data.distanceLabel
+                
+                -- === Update HP Bar & Label ===
+                if hum and fill and hpLabel and hum.Parent then
+                    local currentHP = math.floor(hum.Health)
+                    local maxHP = math.floor(hum.MaxHealth)
                     local percent = math.clamp(hum.Health / hum.MaxHealth, 0, 1)
+                    
+                    -- Update ukuran bar
                     fill.Size = UDim2.new(percent, 0, 1, 0)
                     
-                    -- Warna berubah: Hijau -> Kuning -> Merah
+                    -- Update teks HP: "HP: 100/100"
+                    hpLabel.Text = string.format("HP: %d/%d", currentHP, maxHP)
+                    
+                    -- Warna bar berubah: Hijau -> Kuning -> Merah
                     if percent > 0.6 then
                         fill.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+                        hpLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
                     elseif percent > 0.3 then
                         fill.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
+                        hpLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
                     else
                         fill.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+                        hpLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+                    end
+                end
+                
+                -- === Update Jarak (Meter) ===
+                if myHRP and hrp and hrp.Parent and distLabel then
+                    local distance = (myHRP.Position - hrp.Position).Magnitude
+                    
+                    -- Format jarak bulat
+                    distLabel.Text = string.format("[%dm]", math.floor(distance))
+                    
+                    -- Warna jarak: Merah (dekat), Kuning (sedang), Putih (jauh)
+                    if distance < 15 then
+                        distLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+                    elseif distance < 40 then
+                        distLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
+                    else
+                        distLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
                     end
                 end
             end)
@@ -941,7 +1015,6 @@ local function toggleESP(state)
     espEnabled = state
     
     if state then
-        -- Aktifkan: Pasang ESP ke semua player yang sudah ada
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= lp then
                 createESP(player)
@@ -949,7 +1022,6 @@ local function toggleESP(state)
         end
         startUpdateLoop()
     else
-        -- Nonaktifkan: Hapus semua ESP
         if updateConnection then
             updateConnection:Disconnect()
             updateConnection = nil
@@ -959,7 +1031,7 @@ local function toggleESP(state)
 end
 
 -- ==========================================
--- Handle Player Baru Join
+-- Handle Player Baru Join / Leave
 -- ==========================================
 Players.PlayerAdded:Connect(function(player)
     if espEnabled and player ~= lp then
@@ -995,3 +1067,610 @@ local Toggle = Team:CreateToggle({
 if lp.Character then
     -- Siap pakai, tinggal toggle untuk aktifkan
 end
+
+-- Tool Esp (Working)_____
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local lp = Players.LocalPlayer
+
+-- ==========================================
+-- Daftar Tool/Senjata (Hanya yang ada di sini yang akan di-ESP)
+-- Makanan atau item lain TIDAK akan muncul
+-- ==========================================
+local toolInfo = {
+    ["Pickaxe"]     = { color = Color3.fromRGB(255, 200, 0),   icon = "⛏️" },
+    ["Axe"]         = { color = Color3.fromRGB(139, 69, 19),   icon = "🪓" },
+    ["PoliceBaton"] = { color = Color3.fromRGB(0, 100, 255),   icon = "👮" },
+    ["Shovel"]      = { color = Color3.fromRGB(160, 82, 45),   icon = "🔨" },
+    ["Pipe"]        = { color = Color3.fromRGB(150, 150, 150), icon = "🔧" },
+    ["Knife"]       = { color = Color3.fromRGB(220, 220, 220), icon = "🔪" },
+    ["Crowbar"]     = { color = Color3.fromRGB(255, 80, 80),   icon = "🔴" },
+    ["Bat"]         = { color = Color3.fromRGB(101, 67, 33),   icon = "🏏" },
+    ["Musket"]      = { color = Color3.fromRGB(80, 80, 80),    icon = "🔫" },
+    ["StopSign"]    = { color = Color3.fromRGB(255, 0, 0),     icon = "🛑" },
+    ["AK-47"]    = { color = Color3.fromRGB(255, 128, 0),     icon = "❓" },
+    ["SprayPaint"]    = { color = Color3.fromRGB(252, 3, 248),     icon = "🎨" },
+    ["Taser"]    = { color = Color3.fromRGB(97, 94, 255),     icon = "🔦" },
+    ["Screwdriver"] = { color = Color3.fromRGB(180, 180, 180), icon = "⚙️" },
+    ["Pliers"]      = { color = Color3.fromRGB(200, 50, 50),   icon = "🔧" },
+    ["Handsaw"]     = { color = Color3.fromRGB(139, 90, 43),   icon = "🔩" },
+    ["Hammer"]      = { color = Color3.fromRGB(101, 67, 33),   icon = "🔨" },
+}
+
+-- ==========================================
+-- Variabel ESP
+-- ==========================================
+local espEnabled = false
+local toolESP = {}
+local updateConnection = nil
+local listenerConnected = false
+
+-- ==========================================
+-- Fungsi: Cek apakah item adalah tool/senjata yang terdaftar
+-- ==========================================
+local function isRegisteredTool(item)
+    if not item then return false end
+    local name = item.Name
+    return toolInfo[name] ~= nil
+end
+
+-- ==========================================
+-- Fungsi: Cari Handle/Part yang bisa dijadikan anchor
+-- ==========================================
+local function findAnchorPart(item)
+    if item:IsA("Tool") then
+        local handle = item:FindFirstChild("Handle")
+        if handle and handle:IsA("BasePart") then
+            return handle
+        end
+    end
+    
+    if item:IsA("Model") then
+        local handle = item:FindFirstChild("Handle", true)
+        if handle and handle:IsA("BasePart") then
+            return handle
+        end
+        if item.PrimaryPart then
+            return item.PrimaryPart
+        end
+        for _, child in ipairs(item:GetDescendants()) do
+            if child:IsA("BasePart") then
+                return child
+            end
+        end
+    end
+    
+    if item:IsA("BasePart") then
+        return item
+    end
+    
+    return nil
+end
+
+-- ==========================================
+-- Fungsi: Buat ESP untuk satu Tool
+-- ==========================================
+local function createToolESP(tool)
+    if not tool then return end
+    if toolESP[tool] then return end
+    
+    -- FILTER UTAMA: Hanya tool yang terdaftar di toolInfo
+    if not isRegisteredTool(tool) then
+        return
+    end
+    
+    local anchor = findAnchorPart(tool)
+    if not anchor then return end
+    
+    local toolName = tool.Name
+    local info = toolInfo[toolName]
+    
+    -- Billboard
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "ToolESP_GUI"
+    billboard.Adornee = anchor
+    billboard.Size = UDim2.new(0, 120, 0, 30)
+    billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+    billboard.AlwaysOnTop = true
+    billboard.ResetOnSpawn = false
+    billboard.LightInfluence = 0
+    billboard.Parent = anchor
+    
+    -- Nama Tool
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Name = "NameLabel"
+    nameLabel.Size = UDim2.new(1, 0, 0, 15)
+    nameLabel.Position = UDim2.new(0, 0, 0, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = info.icon .. " " .. toolName
+    nameLabel.TextColor3 = info.color
+    nameLabel.TextStrokeTransparency = 0
+    nameLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextSize = 12
+    nameLabel.Parent = billboard
+    
+    -- Jarak
+    local distLabel = Instance.new("TextLabel")
+    distLabel.Name = "DistLabel"
+    distLabel.Size = UDim2.new(1, 0, 0, 13)
+    distLabel.Position = UDim2.new(0, 0, 0, 15)
+    distLabel.BackgroundTransparency = 1
+    distLabel.Text = "[0m]"
+    distLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    distLabel.TextStrokeTransparency = 0
+    distLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    distLabel.Font = Enum.Font.GothamBold
+    distLabel.TextSize = 11
+    distLabel.Parent = billboard
+    
+    toolESP[tool] = {
+        billboard = billboard,
+        distLabel = distLabel,
+        anchor = anchor
+    }
+end
+
+-- ==========================================
+-- Fungsi: Hapus ESP dari satu Tool
+-- ==========================================
+local function removeToolESP(tool)
+    if toolESP[tool] then
+        pcall(function()
+            if toolESP[tool].billboard then
+                toolESP[tool].billboard:Destroy()
+            end
+        end)
+        toolESP[tool] = nil
+    end
+end
+
+-- ==========================================
+-- Fungsi: Hapus Semua ESP
+-- ==========================================
+local function clearAllToolESP()
+    for tool, _ in pairs(toolESP) do
+        removeToolESP(tool)
+    end
+end
+
+-- ==========================================
+-- Fungsi: Scan semua tool di folder Tools
+-- ==========================================
+local function scanAllTools()
+    local toolsFolder = Workspace:FindFirstChild("Tools")
+    if not toolsFolder then return 0 end
+    
+    local count = 0
+    for _, item in ipairs(toolsFolder:GetChildren()) do
+        -- FILTER: Hanya tool yang terdaftar
+        if isRegisteredTool(item) then
+            createToolESP(item)
+            if toolESP[item] then count = count + 1 end
+        end
+    end
+    
+    print("[ESP] Scan complete. Number of tools detected: " .. count)
+    return count
+end
+
+-- ==========================================
+-- Loop Update Jarak
+-- ==========================================
+local function startUpdateLoop()
+    if updateConnection then updateConnection:Disconnect() end
+    
+    updateConnection = RunService.RenderStepped:Connect(function()
+        local myChar = lp.Character
+        local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
+        if not myHRP then return end
+        
+        local toRemove = {}
+        
+        for tool, data in pairs(toolESP) do
+            local success = pcall(function()
+                local anchor = data.anchor
+                local distLabel = data.distLabel
+                
+                if not anchor or not anchor.Parent then
+                    table.insert(toRemove, tool)
+                    return
+                end
+                
+                local distance = (myHRP.Position - anchor.Position).Magnitude
+                distLabel.Text = string.format("[%dm]", math.floor(distance))
+                
+                if distance < 10 then
+                    distLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+                elseif distance < 30 then
+                    distLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
+                else
+                    distLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+                end
+            end)
+            
+            if not success then
+                table.insert(toRemove, tool)
+            end
+        end
+        
+        for _, tool in ipairs(toRemove) do
+            removeToolESP(tool)
+        end
+    end)
+end
+
+-- ==========================================
+-- Deteksi Tool Baru / Tool Hilang
+-- ==========================================
+local function setupToolFolderListener()
+    if listenerConnected then return end
+    
+    local toolsFolder = Workspace:FindFirstChild("Tools")
+    if not toolsFolder then return end
+    
+    toolsFolder.ChildAdded:Connect(function(child)
+        if not espEnabled then return end
+        -- FILTER: Hanya tool terdaftar
+        if isRegisteredTool(child) then
+            task.wait(0.2)
+            createToolESP(child)
+        end
+    end)
+    
+    toolsFolder.ChildRemoved:Connect(function(child)
+        if toolESP[child] then
+            removeToolESP(child)
+        end
+    end)
+    
+    listenerConnected = true
+end
+
+-- ==========================================
+-- Toggle ESP ON/OFF
+-- ==========================================
+local function toggleToolESP(state)
+    espEnabled = state
+    
+    if state then
+        local toolsFolder = Workspace:FindFirstChild("Tools")
+        if not toolsFolder then
+            toolsFolder = Workspace:WaitForChild("Tools", 15)
+        end
+        
+        if toolsFolder then
+            scanAllTools()
+            setupToolFolderListener()
+            startUpdateLoop()
+        end
+    else
+        if updateConnection then
+            updateConnection:Disconnect()
+            updateConnection = nil
+        end
+        clearAllToolESP()
+    end
+end
+
+-- ==========================================
+-- UI Toggle (ESP Tools) - Seperti Player ESP
+-- ==========================================
+local Toggle = Team:CreateToggle({
+   Name = "ESP Tools",
+   CurrentValue = false,
+   Flag = "ESPToolsToggle",
+   Callback = function(Value)
+       toggleToolESP(Value)
+   end,
+})
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local lp = Players.LocalPlayer
+
+-- ==========================================
+-- Daftar Makanan, Warna & Icon
+-- ==========================================
+local foodInfo = {
+    ["Drink"]    = { color = Color3.fromRGB(100, 200, 255), icon = "🥤" },
+    ["Doughnut"] = { color = Color3.fromRGB(255, 150, 200), icon = "🍩" },
+    ["Hamburger"]= { color = Color3.fromRGB(255, 180, 50),  icon = "🍔" },
+    ["Food"]     = { color = Color3.fromRGB(255, 100, 100), icon = "🍱" },
+    ["Subway"]   = { color = Color3.fromRGB(200, 255, 100), icon = "🥪" },
+}
+
+-- ==========================================
+-- Variabel ESP
+-- ==========================================
+local espEnabled = false
+local foodESP = {}
+local updateConnection = nil
+local listenerConnected = false
+
+-- ==========================================
+-- Fungsi: Cek apakah item adalah makanan yang terdaftar
+-- ==========================================
+local function isRegisteredFood(item)
+    if not item then return false end
+    local name = item.Name
+    return foodInfo[name] ~= nil
+end
+
+-- ==========================================
+-- Fungsi: Cari Anchor Part khusus Food
+-- ==========================================
+local function findFoodAnchor(item)
+    -- 1. Cek apakah item itu Tool/Model dengan Handle
+    if item:IsA("Tool") or item:IsA("Model") then
+        -- Prioritas: Handle
+        local handle = item:FindFirstChild("Handle")
+        if handle and handle:IsA("BasePart") then
+            return handle
+        end
+        
+        -- Prioritas: Main (untuk Food)
+        local main = item:FindFirstChild("Main")
+        if main and main:IsA("BasePart") then
+            return main
+        end
+        
+        -- Prioritas: Model > BreadTop (untuk Subway)
+        local model = item:FindFirstChild("Model")
+        if model and model:IsA("Model") then
+            local breadTop = model:FindFirstChild("BreadTop")
+            if breadTop and breadTop:IsA("BasePart") then
+                return breadTop
+            end
+        end
+        
+        -- Prioritas: BreadTop langsung
+        local breadTop = item:FindFirstChild("BreadTop")
+        if breadTop and breadTop:IsA("BasePart") then
+            return breadTop
+        end
+        
+        -- Fallback: PrimaryPart
+        if item:IsA("Model") and item.PrimaryPart then
+            return item.PrimaryPart
+        end
+        
+        -- Fallback: BasePart pertama
+        for _, child in ipairs(item:GetDescendants()) do
+            if child:IsA("BasePart") then
+                return child
+            end
+        end
+    end
+    
+    -- 2. BasePart langsung
+    if item:IsA("BasePart") then
+        return item
+    end
+    
+    return nil
+end
+
+-- ==========================================
+-- Fungsi: Buat ESP untuk satu Food
+-- ==========================================
+local function createFoodESP(food)
+    if not food then return end
+    if foodESP[food] then return end
+    
+    -- FILTER: Hanya makanan terdaftar
+    if not isRegisteredFood(food) then return end
+    
+    local anchor = findFoodAnchor(food)
+    if not anchor then
+        warn("[ESP] '" .. food.Name .. "' Does not have an anchor part")
+        return
+    end
+    
+    local foodName = food.Name
+    local info = foodInfo[foodName]
+    
+    -- Billboard
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "FoodESP_GUI"
+    billboard.Adornee = anchor
+    billboard.Size = UDim2.new(0, 120, 0, 30)
+    billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+    billboard.AlwaysOnTop = true
+    billboard.ResetOnSpawn = false
+    billboard.LightInfluence = 0
+    billboard.Parent = anchor
+    
+    -- Nama Food
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Name = "NameLabel"
+    nameLabel.Size = UDim2.new(1, 0, 0, 15)
+    nameLabel.Position = UDim2.new(0, 0, 0, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = info.icon .. " " .. foodName
+    nameLabel.TextColor3 = info.color
+    nameLabel.TextStrokeTransparency = 0
+    nameLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextSize = 12
+    nameLabel.Parent = billboard
+    
+    -- Jarak
+    local distLabel = Instance.new("TextLabel")
+    distLabel.Name = "DistLabel"
+    distLabel.Size = UDim2.new(1, 0, 0, 13)
+    distLabel.Position = UDim2.new(0, 0, 0, 15)
+    distLabel.BackgroundTransparency = 1
+    distLabel.Text = "[0m]"
+    distLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    distLabel.TextStrokeTransparency = 0
+    distLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    distLabel.Font = Enum.Font.GothamBold
+    distLabel.TextSize = 11
+    distLabel.Parent = billboard
+    
+    foodESP[food] = {
+        billboard = billboard,
+        distLabel = distLabel,
+        anchor = anchor
+    }
+    
+    print("[ESP] Food Detection: " .. foodName)
+end
+
+-- ==========================================
+-- Fungsi: Hapus ESP dari satu Food
+-- ==========================================
+local function removeFoodESP(food)
+    if foodESP[food] then
+        pcall(function()
+            if foodESP[food].billboard then
+                foodESP[food].billboard:Destroy()
+            end
+        end)
+        foodESP[food] = nil
+    end
+end
+
+-- ==========================================
+-- Fungsi: Hapus Semua ESP
+-- ==========================================
+local function clearAllFoodESP()
+    for food, _ in pairs(foodESP) do
+        removeFoodESP(food)
+    end
+end
+
+-- ==========================================
+-- Fungsi: Scan semua food di folder Tools
+-- ==========================================
+local function scanAllFood()
+    local toolsFolder = Workspace:FindFirstChild("Tools")
+    if not toolsFolder then return 0 end
+    
+    local count = 0
+    for _, item in ipairs(toolsFolder:GetChildren()) do
+        if isRegisteredFood(item) then
+            createFoodESP(item)
+            if foodESP[item] then count = count + 1 end
+        end
+    end
+    
+    print("[ESP] Scanning complete. Total food detected: " .. count)
+    return count
+end
+
+-- ==========================================
+-- Loop Update Jarak
+-- ==========================================
+local function startUpdateLoop()
+    if updateConnection then updateConnection:Disconnect() end
+    
+    updateConnection = RunService.RenderStepped:Connect(function()
+        local myChar = lp.Character
+        local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
+        if not myHRP then return end
+        
+        local toRemove = {}
+        
+        for food, data in pairs(foodESP) do
+            local success = pcall(function()
+                local anchor = data.anchor
+                local distLabel = data.distLabel
+                
+                if not anchor or not anchor.Parent then
+                    table.insert(toRemove, food)
+                    return
+                end
+                
+                local distance = (myHRP.Position - anchor.Position).Magnitude
+                distLabel.Text = string.format("[%dm]", math.floor(distance))
+                
+                -- Warna jarak
+                if distance < 10 then
+                    distLabel.TextColor3 = Color3.fromRGB(255, 50, 50)   -- Merah (dekat)
+                elseif distance < 30 then
+                    distLabel.TextColor3 = Color3.fromRGB(255, 200, 0)   -- Kuning
+                else
+                    distLabel.TextColor3 = Color3.fromRGB(0, 255, 0)     -- Hijau (jauh)
+                end
+            end)
+            
+            if not success then
+                table.insert(toRemove, food)
+            end
+        end
+        
+        for _, food in ipairs(toRemove) do
+            removeFoodESP(food)
+        end
+    end)
+end
+
+-- ==========================================
+-- Deteksi Food Baru / Food Hilang
+-- ==========================================
+local function setupFoodFolderListener()
+    if listenerConnected then return end
+    
+    local toolsFolder = Workspace:FindFirstChild("Tools")
+    if not toolsFolder then return end
+    
+    -- Food baru muncul
+    toolsFolder.ChildAdded:Connect(function(child)
+        if not espEnabled then return end
+        if isRegisteredFood(child) then
+            task.wait(0.2)
+            createFoodESP(child)
+        end
+    end)
+    
+    -- Food hilang (diambil player)
+    toolsFolder.ChildRemoved:Connect(function(child)
+        if foodESP[child] then
+            removeFoodESP(child)
+        end
+    end)
+    
+    listenerConnected = true
+end
+
+-- ==========================================
+-- Toggle Food ESP ON/OFF
+-- ==========================================
+local function toggleFoodESP(state)
+    espEnabled = state
+    
+    if state then
+        local toolsFolder = Workspace:FindFirstChild("Tools")
+        if not toolsFolder then
+            toolsFolder = Workspace:WaitForChild("Tools", 15)
+        end
+        
+        if toolsFolder then
+            scanAllFood()
+            setupFoodFolderListener()
+            startUpdateLoop()
+        end
+    else
+        if updateConnection then
+            updateConnection:Disconnect()
+            updateConnection = nil
+        end
+        clearAllFoodESP()
+    end
+end
+
+-- ==========================================
+-- UI Toggle (ESP Food)
+-- ==========================================
+local Toggle = Team:CreateToggle({
+   Name = "ESP Food",
+   CurrentValue = false,
+   Flag = "ESPFoodToggle",
+   Callback = function(Value)
+       toggleFoodESP(Value)
+   end,
+})
