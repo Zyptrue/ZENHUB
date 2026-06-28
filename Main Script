@@ -138,27 +138,30 @@ local Toggle = MainTab:CreateToggle({
     end,
 })
 
--- Button
-local Button = MainTab:CreateButton({
+-- Keybind
+local Keybind = MainTab:CreateKeybind({
     Name = "One Hit (Needs more weapons)",
-    Callback = function()
+    CurrentKeybind = "F",
+    HoldToInteract = false,
+    Flag = "Keybind1",
+    Callback = function(Keybind)
         pcall(function()
-            if Plr.Character and Plr.Backpack then
-                
-                -- 1. Equip SEMUA tool dari Backpack ke Character (Kecuali yang ada di IgnoredItems)
-                for _, tool in pairs(Plr.Backpack:GetChildren()) do
-                    if tool:IsA("Tool") and not IgnoredItems[tool.Name] then
-                        tool.Parent = Plr.Character
+                if Plr.Character and Plr.Backpack then
+                    
+                    -- 1. Equip SEMUA tool dari Backpack ke Character (Kecuali yang ada di IgnoredItems)
+                    for _, tool in pairs(Plr.Backpack:GetChildren()) do
+                        if tool:IsA("Tool") and not IgnoredItems[tool.Name] then
+                            tool.Parent = Plr.Character
+                        end
                     end
-                end
-                
-                -- 2. Auto attack SEMUA tool yang ada di Character 1x saja (Kecuali yang ada di IgnoredItems)
-                for _, tool in pairs(Plr.Character:GetChildren()) do
-                    if tool:IsA("Tool") and not IgnoredItems[tool.Name] then
-                        tool:Activate()
+                    
+                    -- 2. Auto attack SEMUA tool yang ada di Character 1x saja (Kecuali yang ada di IgnoredItems)
+                    for _, tool in pairs(Plr.Character:GetChildren()) do
+                        if tool:IsA("Tool") and not IgnoredItems[tool.Name] then
+                            tool:Activate()
+                        end
                     end
-                end
-                
+                    
             end
         end)
     end
@@ -218,7 +221,7 @@ end
 local IsAutoHealing = false
 
 local Toggle = MainTab:CreateToggle({
-    Name = "Auto Heal (Work with Some issue)",
+    Name = "Auto Heal (Working)",
     CurrentValue = false,
     Flag = "Auto Heal",
     Callback = function(value)
