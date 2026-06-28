@@ -57,9 +57,9 @@ local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.6", Content = "
 
 local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 1.9", Content = "- [+] Fixed Cframe Bug\n- [+] Add 🚹 Team & Esp\n- [+] Add Choose Team\n- [+] Add Esp Toggle\n- [!!] Delete Spoofing + Hook"})
 
-local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 2.3 (Latest Update)", Content = "- [+] Fixed WalkSpeed Bug\n- [+] Add 🔧 Other Scripts\n- [+] Add Script Tools\n- [!!] Fixed Auto Attack & Auto Heal\n- [+] Add Esp Other\n- [+] More Details & Information\n- [+] Change Toggle >> Button\n- [+] Add 🔥 Misc"})
+local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 2.3", Content = "- [+] Fixed WalkSpeed Bug\n- [+] Add 🔧 Other Scripts\n- [+] Add Script Tools\n- [!!] Fixed Auto Attack & Auto Heal\n- [+] Add Esp Other\n- [+] More Details & Information\n- [+] Change Toggle >> Button\n- [+] Add 🔥 Misc"})
 
-local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 2.5", Content = "- [+] Remake Auto Attack\n- [+] Add One Hit\n- [!!] Fixed Auto Heal\n- [+] More Details & Information"})
+local Paragraph = Change:CreateParagraph({Title = "✅ VERSION 2.5 (Latest Update)", Content = "- [+] Remake Auto Attack\n- [+] Add One Hit\n- [!!] Fixed Auto Heal\n- [+] More Details & Information"})
 
 local MainSection = MainTab:CreateSection("Main Script Toggle")
 local Paragraph = MainTab:CreateParagraph({Title = "📢 INFORMATION", Content = "Auto Heal Not tested yet, Working But With Issue"})
